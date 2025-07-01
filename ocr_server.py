@@ -5,6 +5,10 @@ import io
 
 app = Flask(__name__)
 
+@app.route('/')
+def index():
+    return 'Welcome to OCR server.'
+
 @app.route('/ocr', methods=['POST'])
 def ocr():
     if 'image' not in request.files:
@@ -17,4 +21,4 @@ def ocr():
     return jsonify({'text': text})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5555)
