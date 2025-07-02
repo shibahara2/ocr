@@ -17,7 +17,7 @@ def ocr():
     image_file = request.files['image']
     image = Image.open(image_file.stream)
 
-    text = pytesseract.image_to_string(image)
+    text = pytesseract.image_to_string(image, lang='jpn')
     return Response(json.dumps({'text': text}, ensure_ascii=False))
 
 if __name__ == '__main__':
