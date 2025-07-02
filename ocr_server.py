@@ -1,7 +1,7 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 import pytesseract
 from PIL import Image
-import io
+import json
 
 app = Flask(__name__)
 
@@ -18,7 +18,7 @@ def ocr():
     image = Image.open(image_file.stream)
 
     text = pytesseract.image_to_string(image)
-    return jsonify({'text': text})
+    return Response(json.dumps({'text': text}, ensure_ascii=False))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5555)
