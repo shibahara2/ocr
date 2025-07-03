@@ -17,9 +17,10 @@ def ocr_zip():
         return jsonify({'error': 'No zip file uploaded'}), 400
 
     zip_file = request.files['zip']
+    zip_bytes = io.BytesIO(zip_file.read())  # ← ここで BytesIO に変換
     results = {}
 
-    with zipfile.ZipFile(zip_file.stream) as z:
+    with zipfile.ZipFile(zip_bytes) as z:
         for filename in z.namelist():
             if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tiff')):
                 with z.open(filename) as image_file:
