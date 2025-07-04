@@ -25,7 +25,7 @@ def ocr():
     results = {}
     for i, image in enumerate(images):
         text = pytesseract.image_to_string(image, lang='jpn')
-        results['page-' + (i+1)] = text
+        results['page-' + str(i+1)] = text
 
     return Response(json.dumps(results, ensure_ascii=False), mimetype='application/json')
 
