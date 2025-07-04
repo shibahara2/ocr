@@ -4,6 +4,9 @@ from PIL import Image
 import zipfile
 import io
 import json
+from pdf2image import convert_from_bytes
+import os
+import tempfile
 
 app = Flask(__name__)
 
@@ -12,21 +15,17 @@ def index():
     return 'Welcome to OCR server.'
 
 @app.route('/ocr', methods=['POST'])
-def ocr_zip():
-    if 'zip' not in request.files:
-        return jsonify({'error': 'No zip file uploaded'}), 400
+def ocr():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file uploaded'}), 400
+    
+    pdf_file = request.files['file']
+    images = convert_from_bytes(pdf_file.read())
 
-    zip_file = request.files['zip']
-    zip_bytes = io.BytesIO(zip_file.read())  # ← ここで BytesIO に変換
     results = {}
-
-    with zipfile.ZipFile(zip_bytes) as z:
-        for filename in z.namelist():
-            if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tiff')):
-                with z.open(filename) as image_file:
-                    image = Image.open(image_file)
-                    text = pytesseract.image_to_string(image, lang='jpn')
-                    results[filename] = text
+    for i, image in enumerate(images):
+        text = pytesseract.image_to_string(image, lang='jpn')
+        results['page-' + (i+1)] = text
 
     return Response(json.dumps(results, ensure_ascii=False), mimetype='application/json')
 
