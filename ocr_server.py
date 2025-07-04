@@ -19,8 +19,16 @@ def ocr():
     if 'file' not in request.files:
         return jsonify({'error': 'No file uploaded'}), 400
     
-    pdf_file = request.files['file']
-    images = convert_from_bytes(pdf_file.read())
+    uploaded_file = request.files['file']
+    filename = uploaded_file.filename.lower()
+
+    if filename.endswith('.pdf'):
+        images = convert_from_bytes(uploaded_file.read())
+    elif filename.endswith('.png') or filename.endswith('.jpg'):
+        image = Image.open(uploaded_file.stream)
+        images = [image]
+    else:
+        return jsonify({'error': 'Unsupported file type'}), 415
 
     results = {}
     for i, image in enumerate(images):
